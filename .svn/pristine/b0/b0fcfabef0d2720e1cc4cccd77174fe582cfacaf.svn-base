@@ -1,0 +1,666 @@
+<?php
+
+class Games extends Api
+{
+
+    private $time;
+
+    //登陆验证
+    function __construct()
+    {
+        global $_W;
+        if (empty($_W['member_id'])) {
+            require IA_ROOT . '/source/apis/User.php';
+            /*if (!User::checklogin()) {
+                return self::responseError(-1, '尚未登陆。');
+            }
+
+            if (empty($_W['member_id'])) {
+                return self::responseError(-1, '尚未登陆。');
+            }*/
+        }
+    }
+
+    //主页面
+    public function home()
+    {
+        global $_W, $_GPC;
+        $data = array();
+        $today = date('Y-m-d', TIMESTAMP);
+        $game_id = intval($_GPC['game_id']) ? intval($_GPC['game_id']) : 1;//游戏ID
+        $game = $_W['mc']->get('game_' . $today);
+        if ($game === false) {
+            $game = GamesModel::getInstance()->getGame($game_id);
+            $_W['mc']->add('game_' . $today, $game, MEMCACHE_COMPRESSED, 86500);
+        }
+
+        if (empty($game) || $game['status'] == 0) {
+            return self::responseError(-1, '游戏不存在或已关闭');
+        }
+        unset($game['status']);
+        unset($game['odds']);
+        unset($game['odds_type']);
+        unset($game['create_time']);
+        unset($game['update_time']);
+        $game['thumb'] = $_W['attachurl'] . $game['thumb'];
+        $game['content'] = str_replace(array("\r\n", "\r", "\n"), "", $game['content']); //去除换行，防止JSON解析失败
+
+        $data['game'] = $game;
+
+        $banner = GamesModel::getInstance()->getGameBanner($game_id, $_W['attachurl']);
+
+        $data['banners'] = $banner;
+
+        $login = true;
+        if (empty($_W['member_id'])) {
+            if (!User::checklogin()) {
+                $login = false;
+            }
+            if (empty($_W['member_id'])) {
+                $login = false;
+            }
+        }
+        if ($login) {
+            $data['member_credit'] = GamesModel::getInstance()->getUserScore($_W['member_id']);//用户剩余总积分
+            $data['member_record_num'] = GamesModel::getInstance()->getDrawCount($game_id, $_W['member_id'], strtotime(date('Y-m-d'), TIMESTAMP));//用户今日已抽奖次数
+            $data['member_limit_num'] = $game['max_num'] - $data['member_record_num'];//今日剩余抽奖次数
+            $qualified = false; //用户是否有抽奖资格
+            if ($data['member_record_num'] < $game['free_num']) {
+                $qualified = true;
+            } else if ($data['member_record_num'] >= $game['max_num']) {
+                $qualified = false;
+            } else {
+                if ($data['member_credit'] >= $game['credit']) {
+                    $qualified = true;
+                } else {
+                    $qualified = false;
+                }
+            }
+            $data['member_qualified'] = $qualified;
+            $data['game']['free_num'] = $data['game']['free_num'] - $data['member_record_num'];
+            if ($data['game']['free_num'] < 0) {
+                $data['game']['free_num'] = 0;
+            }
+        } else {
+            $data['member_credit'] = 0;
+            $data['member_record_num'] = 0;
+            $data['member_limit_num'] = 0;
+            $data['member_qualified'] = false;
+            $data['game']['free_num'] = 0;
+        }
+
+        $data['prize_show'] = GamesModel::getInstance()->getShow($game_id);
+
+        $prizeCoupons = $_W['mc']->get('prize_coupons_' . $today);
+        if ($prizeCoupons === false) {
+            $prizeCoupons = GamesModel::getInstance()->prizeCouponList($game_id, $_W['attachurl'], TIMESTAMP);
+            $_W['mc']->add('prize_coupons_' . $today, $prizeCoupons, MEMCACHE_COMPRESSED, 86500);
+        }
+		
+        $data['prize_coupons'] = $prizeCoupons;
+
+        $prizeItems = $_W['mc']->get('prize_items_' . $today);
+        if ($prizeItems === false) {
+            $prizeItems = GamesModel::getInstance()->prizeItemList($game_id, $_W['attachurl'], TIMESTAMP);
+            $_W['mc']->add('prize_items_' . $today, $prizeItems, MEMCACHE_COMPRESSED, 86500);
+        }
+        $data['prize_items'] = $prizeItems;
+
+        return self::responseOk($data);
+    }
+
+    // 获取获奖展示
+    public function getShow()
+    {
+        global $_GPC;
+        $gameId = intval($_GPC['game_id']) ? intval($_GPC['game_id']) : 1;//游戏ID
+        $show = GamesModel::getInstance()->getShow($gameId);
+        return self::responseOk($show);
+    }
+
+    // 抽奖
+    public function draw()
+    {
+        global $_W, $_GPC;
+
+        if (empty($_W['member_id'])) {
+            if (!User::checklogin()) {
+                return self::responseError(-1, '尚未登陆。');
+            }
+            if (empty($_W['member_id'])) {
+                return self::responseError(-1, '尚未登陆。');
+            }
+        }
+
+        $this->time = TIMESTAMP;
+        $today = date('Y-m-d', $this->time);
+        $gameId = intval($_GPC['game_id']) ? intval($_GPC['game_id']) : 1;
+        $game = $_W['mc']->get('game_' . $today);
+        if ($game === false) {
+            $game = GamesModel::getInstance()->getGame($gameId);
+            $_W['mc']->add('game_' . $today, $game, MEMCACHE_COMPRESSED, 86500);
+        }
+		if (TIMESTAMP < 1499616000 ) {
+			if ( !($_W['member_id'] == '50693410' || $_W['member_id'] == '141484' || $_W['member_id'] == '54249204' || $_W['member_id'] == '58342') ) {
+				return self::responseError(-1, '测试期间，您暂时还不能抽奖！');
+			}
+		}
+
+        // 游戏是否存在
+        if (empty($game) || !$game['status']) {
+            return self::responseError(-1, '游戏不存在');
+        }
+        // 判断 memcache 中是否有当天的库存，若不存在key，则初始化库存
+        if ($_W['mc']->get('prize_list_' . $today) === false) {
+            // 初始化每件奖品库存
+            $prizeList = GamesModel::getInstance()->prizeList($gameId, $_W['attachurl'], TIMESTAMP);
+            $prizeUsedList = GamesModel::getInstance()->prizeUsedList($gameId, strtotime(date('Y-m-d'), TIMESTAMP));
+            $prizeCount = count($prizeList);
+            foreach ($prizeList as $k => $prize) {
+                if (!empty($prizeUsedList[$k])) {
+                    $stock = $prize['limit_num'] - $prizeUsedList[$k]['count'];
+                    $_W['mc']->add('prize_id_' . $prize['game_prize_id'] . '_' . $today, $stock, MEMCACHE_COMPRESSED, 86500);
+                } else {
+                    $_W['mc']->add('prize_id_' . $prize['game_prize_id'] . '_' . $today, $prize['limit_num'], MEMCACHE_COMPRESSED, 86500);
+                }
+                //$proArr[$prize['game_prize_id']] = $prize['odds'];
+                // 奖品均等概率
+                if ($game['odds_type'] == 0) {
+                    $prizeList[$k]['odds'] = 100;
+                }
+            }
+
+            $_W['mc']->add('prize_list_' . $today, serialize($prizeList), MEMCACHE_COMPRESSED, 86500);
+        }
+
+        // 用户是否有资格参与
+        $drawCount = GamesModel::getInstance()->getDrawCount($gameId, $_W['member_id'], strtotime(date('Y-m-d'), $this->time));
+        if ($drawCount < $game['free_num']) {
+            // 免费抽奖
+            return $this->drawProcess($game, false);
+        } elseif ($drawCount >= $game['free_num'] && $drawCount < $game['max_num']) {
+            // 免费抽奖已用完，查看是否有足够积分进行抽奖
+            $score = GamesModel::getInstance()->getUserScore($_W['member_id']);
+            if ($score < $game['credit']) {
+                return self::responseError(-2, '积分不够参与抽奖');
+            } else {
+                // 用积分进行抽奖
+                return $this->drawProcess($game, true);
+            }
+        } elseif ($drawCount >= $game['max_num']) {
+            return self::responseError(-1, '今天抽奖次数已用完');
+        }
+    }
+
+    // 抽奖信息插入数据库 $flag = 1 则表示需要扣积分，0则为免费
+    private function drawProcess($game, $flag)
+    {
+        global $_W;
+        // $id = 0代表能中奖，后面再算具体奖品
+        $id = $this->getWinnerId(array(0 => $game['odds'], 1 => (100 - $game['odds'])));
+        $credit = $flag ? $game['credit'] : 0;
+
+        pdo_begin();
+        // 扣积分
+        if ($credit) {
+            $creditLog = array(
+                'member_id' => $_W['member_id'],
+                'type' => 0,
+                'actid' => 614,
+                'change' => 0 - $game['credit'],
+                'addtime' => $this->time,
+                'min_memo' => '抽奖消耗积分',
+            );
+            $flag = pdo_insert('bj_qmxk_member_credit_log', $creditLog);
+            if ($flag === false) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+            $flag = pdo_query("UPDATE ims_bj_qmxk_member_info SET credit_used = credit_used + ? WHERE member_id = ?", array($game['credit'], $_W['member_id']));
+            if ($flag === false) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+        }
+        if ($id) {
+            // 未中奖，插入抽奖记录
+            $drawPrizeRecord = array(
+                'member_id' => $_W['member_id'],
+                'game_id' => $game['game_id'],
+                'is_win' => 0,
+                'credit' => $credit,
+                'add_time' => $this->time
+            );
+            $drawRecodeId = GamesModel::getInstance()->addDrawPrizeRecord($drawPrizeRecord);
+            if (empty($drawRecodeId)) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+            pdo_commit();
+            return self::responseError(-3, '很遗憾，您未中奖');
+        } else {
+            // 计算具体中奖奖品
+            $today = date('Y-m-d', $this->time);
+            $prizeList = unserialize($_W['mc']->get('prize_list_' . $today));
+            $proArr = array(); //初始化奖品数组
+            foreach ($prizeList as $k => $prize) {
+                $stock = $_W['mc']->get('prize_id_' . $prize['game_prize_id'] . '_' . $today);
+                if ($stock > 0) {
+                    $proArr[$prize['game_prize_id']] = $prize['odds'];
+                }
+            }
+            if (empty($proArr)) {
+                // 未中奖，插入抽奖记录
+                $drawPrizeRecord = array(
+                    'member_id' => $_W['member_id'],
+                    'game_id' => $game['game_id'],
+                    'is_win' => 0,
+                    'credit' => $credit,
+                    'add_time' => $this->time
+                );
+                $drawRecodeId = GamesModel::getInstance()->addDrawPrizeRecord($drawPrizeRecord);
+                if (empty($drawRecodeId)) {
+                    pdo_rollback();
+                    return self::responseError(-1, '系统异常，请稍后再试');
+                }
+                pdo_commit();
+                return self::responseError(-3, '很遗憾，您未中奖');
+            }
+            // 调用抽奖获的中奖 game_prize_id
+            $gamePrizeId = $this->getWinnerId($proArr);
+            //  减库存操作
+            $_W['mc']->decrement('prize_id_' .$gamePrizeId . '_' . $today);//添加漏掉的key前缀
+            if ($prizeList[$gamePrizeId]['type'] == 'voucher') {
+                $voucher = GamesModel::getInstance()->getVoucher($prizeList[$gamePrizeId]['prize_id']);
+                if (empty($voucher)) {
+                    $_W['mc']->increment('prize_id_' . $gamePrizeId . '_' . $today);
+                    pdo_rollback();
+                    return self::responseError(-1, '优惠券信息有误');
+                }
+            }
+            //  插入抽奖记录
+            try {
+                // 优惠券直接发到用户账户中，奖品则需要用户主动领奖生成订单
+                if ($prizeList[$gamePrizeId]['type'] == 'voucher') {
+                    $data = array(
+                        'member_id' => $_W['member_id'],
+                        'voucher_id' => $voucher['id'],
+                        'status' => 0,
+                        'use_time' => $this->time,
+                        'end_time' => $this->time + 24 * 60 * 60 * $game['voucher_effective_day'],
+                        'price' => $voucher['price'],
+                        'discount' => $voucher['discount'],
+                        'type' => $voucher['type'],
+                        'is_top' => $voucher['is_top'],
+                        'title' => $voucher['title'],
+                        'remark' => $voucher['remark'],
+                        'pay' => $voucher['pay'],
+                        'create_time' => date('Y-m-d H:i:s', $this->time)
+                    );
+                    $id = GamesModel::getInstance()->addVoucher($data);
+                    if (empty($id)) {
+                        pdo_rollback();
+                        $_W['mc']->increment('prize_id_' .$gamePrizeId . '_' . $today);
+                        return self::responseError(-1, '系统异常，请稍后再试');
+                    }
+                }
+                $drawPrizeRecord = array(
+                    'member_id' => $_W['member_id'],
+                    'game_id' => $game['game_id'],
+                    'is_win' => 1,
+                    'credit' => $credit,
+                    'add_time' => $this->time
+                );
+                $drawRecodeId = GamesModel::getInstance()->addDrawPrizeRecord($drawPrizeRecord);
+                if (empty($drawRecodeId)) {
+                    pdo_rollback();
+                    $_W['mc']->increment('prize_id_' .$gamePrizeId . '_' . $today);
+                    return self::responseError(-1, '系统异常，请稍后再试');
+                }
+                $winnerRecord = array(
+                    'member_id' => $_W['member_id'],
+                    'game_id' => $game['game_id'],
+                    'game_prize_id' => $gamePrizeId,
+                    'draw_recode_id' => $drawRecodeId,
+                    'status' => 0,
+                    'end_time' => $this->time + 24 * 60 * 60 * $game['prize_effective_day'],
+                    'add_time' => $this->time,
+                    'type' => $prizeList[$gamePrizeId]['type'],
+                    'prize_id' => $prizeList[$gamePrizeId]['prize_id']
+                );
+                if ($prizeList[$gamePrizeId]['type'] == 'voucher') {
+                    $winnerRecord['status'] = 1;
+                    $winnerRecord['member_prize_id'] = $id;
+                    $winnerRecord['end_time'] = 0;
+                }
+                $winnerRecordId = GamesModel::getInstance()->addWinnerRecord($winnerRecord);
+                if (empty($winnerRecordId)) {
+                    pdo_rollback();
+                    $_W['mc']->increment('prize_id_' . $gamePrizeId . '_' . $today);
+                    return self::responseError(-1, '系统异常，请稍后再试');
+                }
+            } catch (Exception $e) {
+                pdo_rollback();
+                $_W['mc']->increment('prize_id_' . $gamePrizeId . '_' . $today);
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+            pdo_commit();
+            $ret = array(
+                'type' => $prizeList[$gamePrizeId]['type'],
+                'img' => $prizeList[$gamePrizeId]['img'],
+                'prize_item' => $prizeList[$gamePrizeId]['prize_item'],
+                'show_item' => $prizeList[$gamePrizeId]['show_item'],
+                'prize_member_id' => $winnerRecordId
+            );
+            return self::responseOk($ret);
+        }
+
+    }
+
+    // 奖品生成订单
+    public function generateOrders()
+    {
+        global $_W, $_GPC;
+
+        if (empty($_W['member_id'])) {
+            if (!User::checklogin()) {
+                return self::responseError(-1, '尚未登陆。');
+            }
+            if (empty($_W['member_id'])) {
+                return self::responseError(-1, '尚未登陆。');
+            }
+        }
+
+        //$gameId = intval($_POST['game_id']) ? intval($_POST['game_id']) : 1;
+        $addressId = intval($_GPC['address_id']) ? intval($_GPC['address_id']) : 0;
+        $prizeMemberId = intval($_GPC['prize_member_id']) ? intval($_GPC['prize_member_id']) : 0;
+        $prize = GamesModel::getInstance()->getPrizeDetail($prizeMemberId);
+        if (empty($prize) || ($prize['member_id'] != $_W['member_id']) || ($prize['type'] != 'prize_goods')) {
+            return self::responseError(-1, '[prize_member_id] 参数错误');
+        }
+        if ($prize['status'] == 1) {
+            return self::responseError(-1, '奖品已领取过，不能重复领取');
+        }
+        if ($prize['end_time'] < TIMESTAMP) {
+            return self::responseError(-1, '奖品已过期');
+        }
+        $address = GamesModel::getInstance()->getAddress($addressId);
+        if (empty($address) || ($address['member_id'] != $_W['member_id'])) {
+            return self::responseError(-1, '[address_id] 参数错误');
+        }
+
+        $member_relation = pdo_fetch("SELECT * FROM ims_bj_qmxk_member_shareid WHERE member_id='{$_W['member_id']}'");
+        if (empty($member_relation)) {
+            //return self::responseError(-1, '[member_id] 参数错误'); //如果用户没有上级，也是允许抽奖的
+        }
+        $goods = GamesModel::getInstance()->getGoodsDetail($prize['prize_id']);
+        if (empty($goods)) {
+            return self::responseError(-1, '商品不存在');
+        }
+
+        $ordersns = build_ordersn($_W['member_id']);
+        try {
+            pdo_begin();
+            $data = array(
+                'weid' => 2,
+                'sellerid' => $goods['sellerid'],
+                'member_id' => $_W['member_id'],
+                'ordersn' => $ordersns,
+                'addressid' => $addressId,
+                'status' => 1,
+                'paytype' => 1,//支付方式
+                'sendtype' => 1,//发货方式，1快递2自提
+                'dispatch' => 1,//配送方式 0自提1快递
+
+                'goodstype' => $goods['type'],
+                'order_type' => 3,
+
+                'from_user' => '',
+                'createtime' => TIMESTAMP,
+                'updatetime' => TIMESTAMP,
+                'platform' => self::$platform,
+
+                'shareid' => $member_relation['shareid'],
+                'shareid2' => $member_relation['shareid2'],
+                'shareid3' => $member_relation['shareid3'],
+                'shareid4' => $member_relation['shareid4'],
+                'shareid5' => $member_relation['shareid5'],
+                'shareid6' => $member_relation['shareid6'],
+                'shareid7' => $member_relation['shareid7'],
+                'shareid8' => $member_relation['shareid8'],
+                'extra_shareid' => $member_relation['shareid'],
+                'extra_shareid2' => $member_relation['shareid2'],
+                'extra_shareid3' => $member_relation['shareid3'],
+                'extra_shareid4' => $member_relation['shareid4'],
+                'extra_shareid5' => $member_relation['shareid5'],
+                'extra_shareid6' => $member_relation['shareid6'],
+                'extra_shareid7' => $member_relation['shareid7'],
+                'extra_shareid8' => $member_relation['shareid8'],
+                'extra_shareid9' => $member_relation['shareid9'],
+                'extra_shareid10' => $member_relation['shareid10'],
+                'extra_shareid11' => $member_relation['shareid11'],
+                'extra_shareid12' => $member_relation['shareid12'],
+                'extra_shareid13' => $member_relation['shareid13'],
+                'extra_shareid14' => $member_relation['shareid14'],
+                'extra_shareid15' => $member_relation['shareid15'],
+                'extra_shareid16' => $member_relation['shareid16'],
+                'extra_shareid17' => $member_relation['shareid17'],
+                'extra_shareid18' => $member_relation['shareid18'],
+                'extra_shareid19' => $member_relation['shareid19'],
+                'extra_shareid20' => $member_relation['shareid20']
+            );
+
+            $flag = pdo_insert('bj_qmxk_order', $data);
+            $orderId = pdo_insertid();
+            if ($flag === false) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+            $flag = self::addOrderLog(array(
+                'orderid' => $orderId,
+                'ordersn' => $ordersns,
+                'status' => 'create',
+                'action_user' => 'user',
+                'member_id' => $_W['member_id'],
+                'adminid' => 0,
+                'sellerid' => 0,
+                'dateline' => TIMESTAMP,
+                'remark' => ''
+            ));
+            if ($flag === false) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+            $orderGoods = array(
+                'weid' => 2,
+                'goodsid' => $prize['prize_id'],
+                'orderid' => $orderId,
+                'prize_pool' => 0,
+                'content' => '',
+                'total' => 1,
+                'createtime' => TIMESTAMP,
+                'optionname' => '',
+            );
+            $flag = pdo_insert('bj_qmxk_order_goods', $orderGoods);
+            if ($flag === false) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+            //
+            if ($goods['totalcnf'] == 0 || $goods['totalcnf'] == 1) {
+                $flag = pdo_query("UPDATE ims_bj_qmxk_goods SET total = total - 1, sales = sales + 1 WHERE id = '{$prize['prize_id']}'");
+                if ($flag === false) {
+                    pdo_rollback();
+                    return self::responseError(-1, '系统异常，请稍后再试');
+                }
+            }
+            // 更新 ims_bj_qmxk_order_count 表
+            if ($member_relation['shareid']) {
+                $order_count = pdo_fetch("SELECT m.flag,c.profileid FROM ims_bj_qmxk_member m LEFT JOIN ims_bj_qmxk_order_count c ON m.id=c.profileid WHERE m.id='{$member_relation['shareid']}'");
+                if ($order_count['flag'] == 1) {
+                    if ($order_count['profileid']) {
+                        $flag = pdo_query("UPDATE " . tablename('bj_qmxk_order_count') . " SET `count_all`=count_all+1,`count_all_goods`=count_all_goods+1,`count_today`=count_today+1 WHERE `profileid`='{$member_relation['shareid']}'");
+                    } else {
+                        $flag = pdo_query("INSERT INTO " . tablename('bj_qmxk_order_count') . " SET `profileid`='{$member_relation['shareid']}',`member_id`='{$_W['member_id']}',`count_all`='1',`count_all_goods`='1',`count_today`='1'");
+                    }
+                }
+            }
+            if ($flag === false) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+            // 更新中奖纪录表
+            $flag = pdo_query("UPDATE ims_games_prize_member SET member_prize_id = ?, status = 1 WHERE id = ?", array($orderId, $prizeMemberId));
+            if ($flag === false) {
+                pdo_rollback();
+                return self::responseError(-1, '系统异常，请稍后再试');
+            }
+
+            pdo_commit();
+            return self::responseOk(array('ordersn' => $ordersns));
+        } catch (Exception $e) {
+            pdo_rollback();
+            return self::responseError(-1, '系统异常，请稍后再试');
+        }
+    }
+
+    // 获取我的奖品
+    public function getUserPrize()
+    {
+        global $_W, $_GPC;
+
+        if (empty($_W['member_id'])) {
+            if (!User::checklogin()) {
+                return self::responseError(-1, '尚未登陆。');
+            }
+            if (empty($_W['member_id'])) {
+                return self::responseError(-1, '尚未登陆。');
+            }
+        }
+
+        $itemCount = intval($_GPC['item_count']) ? intval($_GPC['item_count']) : 10;
+        $userPrize = GamesModel::getInstance()->getUserPrize($_W['member_id'], $_W['attachurl'], $itemCount);
+        $userPrizeCount = GamesModel::getInstance()->getUserPrizeCount($_W['member_id']);
+        $ret['prize_list'] = $userPrize;
+        $ret['more'] = 1;
+        if ($userPrizeCount <= $itemCount) {
+            $ret['more'] = 0;
+        }
+        return self::responseOk($ret);
+    }
+
+    /**
+     * 根据概率获取中奖号码
+     */
+    private function getWinnerId($proArr)
+    {
+        $base = 100;
+        $result = '';
+        //概率数组的总概率精度
+        $proSum = array_sum($proArr) * $base;
+        //概率数组循环
+        foreach ($proArr as $key => $proCur) {
+            $randNum = mt_rand(1, $proSum);
+            if ($randNum <= ($proCur * $base)) {
+                $result = $key;
+                break;
+            } else {
+                $proSum -= ($proCur * $base);
+            }
+        }
+        unset($proArr);
+        return $result;
+    }
+
+    private function addOrderLog($orderinfo)
+    {
+        $data['orderid'] = $orderinfo['orderid'];
+        $data['ordersn'] = $orderinfo['ordersn'];
+        $data['status'] = $orderinfo['status'];
+        $data['action_user'] = $orderinfo['action_user'];
+        $data['member_id'] = $orderinfo['member_id'];
+        $data['adminid'] = $orderinfo['adminid'];
+        $data['sellerid'] = $orderinfo['sellerid'];
+        $data['dateline'] = TIMESTAMP;
+        $data['remark'] = $orderinfo['remark'];
+        $data['platform'] = self::$platform;
+
+        return pdo_insert('bj_qmxk_order_log', $data);
+    }
+
+    /**
+     * 进行锁操作
+     * @param [type]  $lock_id
+     * @param integer $expire
+     * @return boolean
+     */
+    private function lock($lock_id, $expire = 30)
+    {
+        $prefix = 'stock_lock_';
+        $mkey = $prefix . $lock_id;
+        for ($i = 0; $i < 10; $i++) {
+            $flag = false;
+            try {
+                $flag = $this->mc->add($mkey, '1', MEMCACHE_COMPRESSED, $expire);
+            } catch (Exception $e) {
+                $flag = false;
+            }
+            if ($flag) {
+                return true;
+            } else {
+                //wait for 0.3 seconds
+                usleep(300000);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断锁状态
+     * @param  [type]  $lock_id
+     * @return boolean
+     */
+    private function isLock($lock_id)
+    {
+        $prefix = 'stock_lock_';
+        $mkey = $prefix . $lock_id;
+        $ret = $this->mc->get($mkey);
+        if (empty($ret) || $ret === false) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 解锁
+     * @param  [type] $lock_id
+     * @return [type]
+     */
+    private function unLock($lock_id)
+    {
+        $prefix = 'stock_lock_';
+        $mkey = $prefix . $lock_id;
+        $ret = $this->mc->delete($mkey);
+        return $ret;
+    }
+
+    // 清除奖品库存缓存
+    public function clearCache()
+    {
+        global $_W, $_GPC;
+        $game_id = intval($_GPC['game_id']) ? intval($_GPC['game_id']) : 1;//游戏ID
+        $today = date('Y-m-d', TIMESTAMP);
+        $_W['mc']->delete('game_' . $today);
+        //$_W['mc']->delete('banner_' . $today);
+        $_W['mc']->delete('prize_coupons_' . $today);
+        $_W['mc']->delete('prize_items_' . $today);
+        $_W['mc']->delete('prize_list_' . $today);
+        $prizes = pdo_fetchall("/*youqi*/SELECT game_prize_id FROM `ims_games_prize` WHERE game_id = ? AND status = 1", array($game_id));
+        foreach($prizes AS $key => $prize) {
+            $_W['mc']->delete('prize_id_' . $prize['game_prize_id'] . '_'  . $today);
+        }
+        return self::responseOk();
+    }
+
+
+}

@@ -1,0 +1,206 @@
+/*header*/
+#captionHeader{
+	width: 100%;
+	height: 2.053333rem;
+	background: url(//statics.shunliandongli.com/resource/createdCaption/imgs/background.png) no-repeat;
+	background-size: 100% 100%;
+	text-align: center;
+	line-height: 2.053333rem;
+	color: #fff;
+	font-size: 0.586667rem;
+}
+#captionHeader h1::before{
+	content: ' ';
+	display: inline-block;
+	width: 1.213333rem;
+	height: 1.213333rem;
+	background: url(//statics.shunliandongli.com/resource/createdCaption/imgs/logo.png) no-repeat;
+	background-size: 100% 100%;
+	vertical-align: middle;
+	margin-right: 0.266667rem;
+}
+/*main*/
+#captionMain{
+	width: 96.5%;
+	margin: 0 auto;
+	margin-top: 0.333333rem;
+}
+.mainIncome{
+	position: relative;
+	width: 100%;
+	height: 1.773333rem;
+	background: url(//statics.shunliandongli.com/resource/createdCaption/imgs/main_background.png) no-repeat;
+	background-size: 100% 100%;
+}
+.captionmain h2{
+	position: absolute;
+	left: 0.133333rem;
+	top: -0.346667rem;
+	width: 3.333333rem;
+	height: 0.693333rem;
+	line-height: 0.693333rem;
+	background: #13dbf4;
+	color: #fff;
+	font-size: 0.4rem;
+	font-weight: 500;
+	border-radius: 15px;
+	padding-left: 0.4rem;
+}
+.mainIncome p{
+	/*width: 100%;*/
+	height: 1.773333rem;
+	line-height: 1.773333rem;
+	font-size: 0.333333rem;
+	margin-left: 0.4rem;
+	color: #ff5408;
+}
+.mainSubsidy{
+	position: relative;
+	width: 100%;
+	height:4.266667rem;
+	background: linear-gradient(to bottom,#e3f1fd,#fff);
+	background: -webkit-linear-gradient(top,#e3f1fd,#fff);
+	background: -moz-linear-gradient(top,#e3f1fd,#fff);
+	border-radius: 15px;
+}
+.mainSubsidy .mainSubsidyProfit{
+	padding: 0.666667rem 0 0.133333rem 0;
+	color: #ff5408;
+	/*font-size: 0.333333rem;*/
+}
+.mainSubsidy p{
+	font-size: 0.333333rem;
+	margin-left: 0.4rem;
+}
+.mainReward{
+	position: relative;
+	width: 100%;
+	height: 4.626667rem;
+	background: linear-gradient(to bottom,#e3f1fd,#fff);
+	background: -webkit-linear-gradient(top,#e3f1fd,#fff);
+	background: -moz-linear-gradient(top,#e3f1fd,#fff);
+	border-radius: 15px;
+}
+#mainRewardTitle{
+	width: 6.0rem;
+}
+.mainReward .mainRewardProfit{
+	padding: 0.666667rem 0 0.133333rem 0;
+	color: #ff5408;
+}
+.mainReward p{
+	font-size: 0.333333rem;
+	margin-left: 0.4rem;
+}
+.mainRemove{
+	width: 100%;
+}
+.mainRemove h3{
+	width: 100%;
+	font-size: 0.333333rem;
+	font-weight: 500;
+	text-align: center;
+	margin-bottom: 0.266667rem;
+}
+.mainRemove h3 span{
+	color: #666;
+	font-size: 0.293333rem;
+}
+.mainRemoveLevel{
+	width: 100%;
+	height: 0.666667rem;
+}
+.mainRemove li{
+	float: left;
+	width: 1.266667rem;
+	border-right: 1px solid #ff5908;
+	border-top: 1px solid #ff5908;
+	border-bottom: 1px solid #ff5908;
+	text-align: center;
+	font-size: 0.333333rem;
+	color: #ff5908;
+}
+.mainRemove li:first-child{
+	width: 1.8rem;
+	border-left: 1px solid #ff5908;
+	background: #ff7108;
+	color: #fff;
+}
+.mainRemoveLevel li{
+	height: 0.666667rem;
+	border-bottom: none;
+	line-height: 0.626667rem;
+}
+.mainRemoveNorm{
+	height: 0.933333rem;
+}
+.mainRemoveNorm li{
+	height: 0.893333rem;
+	line-height: 0.893333rem;
+}
+.mainRemoveNorm li:first-child{
+	position: relative;
+	background: #ff9308;
+	line-height: 0.466667rem;
+}
+.mainRemoveNorm li span{
+	position: absolute;
+	left:-0.666667rem;
+	top: 0.4rem;
+	font-size:10px;
+	transform: scale(0.6);
+	height: 0.4rem; 
+	width: 160%;
+}
+.mainRemoveNorm li p{
+	margin-top: 0.066667rem;
+}
+#captionFooter{
+	width: 100%;
+	text-align: center;
+}
+#captionFooter .captionFooterTitle{
+	width: 100%;
+	margin: 0.533333rem 0 0 0;
+	text-align: center;
+	font-size: 0.266667rem;
+}
+#captionFooter img{
+	margin-top: 0.266667rem;
+	width: 3.013333rem;
+	height: 1.013333rem;
+}
+/*#captionFooter div{
+	position: relative;
+	width: 3.16rem;
+	height: 1.346667rem;
+	margin: 0 auto;
+	padding: 0.266667rem;
+}
+#captionFooter img{
+	display: inline-block;
+	width: 0.613333rem;
+	height: 0.613333rem;
+	vertical-align: top;
+}
+#captionFooter span{
+	display: inline-block;
+	vertical-align: top;
+	font-size: 0.466667rem;
+	margin-left: 0.266667rem;
+}
+#captionFooter div p{
+	margin-top: 0;
+	font-size: 0.16rem;
+}
+
+#captionFooter i{
+	position: absolute;
+	right: 0.2rem;
+	top: 0.2rem;
+}*/
+audio{
+	width: 100%;
+	margin-top: 0.066667rem;
+	/*border-radius: 10px;*/
+}

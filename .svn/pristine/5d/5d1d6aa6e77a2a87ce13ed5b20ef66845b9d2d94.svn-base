@@ -1,0 +1,218 @@
+<?php
+
+class GamesModel
+{
+
+    private static $_instance = NULL;
+
+    /**
+     *
+     * @return GamesModel
+     */
+    final public static function getInstance()
+    {
+        if (!isset(self::$_instance) || !self::$_instance instanceof self) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    // 获取游戏详情
+    public function getGame($gameId)
+    {
+        $sql = "SELECT * FROM ims_games WHERE game_id = ?";
+        $ret = pdo_fetch($sql, array($gameId));
+        return $ret;
+    }
+
+    //获取游戏广告轮播图
+    public function getGameBanner($gameId, $attachUrl)
+    {
+        $sql = "SELECT banner_id,game_id, title ,img,type,itemId FROM `ims_games_banner` WHERE game_id = ? AND status = 1 ORDER BY displayorder ASC LIMIT 10";
+        $banners = pdo_fetchall($sql, array($gameId));
+        $game_banner = array();
+        foreach ($banners as $banner) {
+            $banner['img'] = $attachUrl . $banner['img'];
+            /*switch ($banner['type']) {
+                case 'goods':
+                    $banner['url'] = 'slmall://goods/item.json?goodsId=' . $banner['itemId'];
+                    break;
+                case 'activity':
+                    $banner['url'] = 'https://api.shunliandongli.com/v1/special/show.json?id=' . $banner['itemId'];
+                    break;
+                case 'category':
+                    $banner['url'] = 'slmall://clist/item.json?id=' . $banner['itemId'];
+                    break;
+                case 'shop':
+                    $banner['url'] = 'slmall://shop/home.json?shopId=' . $banner['itemId'];
+                    break;
+                case 'pcategory':
+                    $banner['url'] = 'slmall://plist/item.json?id=' . $banner['itemId'];
+                    break;
+                default:
+                    $banner['url'] = '';
+                    break;
+            }*/
+            //unset($banner['itemId']);
+            //unset($banner['type']);
+            unset($banner['status']);
+            unset($banner['displayorder']);
+            $game_banner[] = $banner;
+        }
+        return $game_banner;
+    }
+
+    // 获取获奖展示
+    public function getShow($gameId)
+    {
+        $sql = "SELECT pm.add_time, mi.nickname, gp.show_item, gp.type, gp.prize_id FROM `ims_games_prize_member` AS pm " .
+            " LEFT JOIN ims_games_prize AS gp on gp.game_prize_id = pm.game_prize_id " .
+            " LEFT JOIN ims_bj_qmxk_member_info AS mi ON mi.member_id=pm.member_id WHERE pm.game_id = ? ORDER BY pm.add_time DESC LIMIT 20";
+        $items = pdo_fetchall($sql, array($gameId));
+        if (!empty($items)) {
+            foreach ($items as $k => $item) {
+                $items[$k]['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
+            }
+        }
+        return $items;
+    }
+
+    // 获取单个奖品详情
+    public function getPrizeDetail($prizeMemberId)
+    {
+        $sql = "SELECT pm.type, pm.status, pm.end_time, pm.member_id, pm.prize_id FROM ims_games_prize_member pm WHERE pm.id = ?";
+        $ret = pdo_fetch($sql, array($prizeMemberId));
+        return $ret;
+    }
+
+    // 获取我的奖品
+    public function getUserPrize($memberId, $attachUrl, $itemCount)
+    {
+        $sql = "SELECT p.show_item, p.img, pm.add_time, pm.id, pm.status, p.type FROM ims_games_prize_member pm INNER JOIN ims_games_prize p ON pm.game_prize_id = p.game_prize_id WHERE member_id = ? ORDER BY pm.add_time DESC LIMIT {$itemCount}";
+        $ret = pdo_fetchall($sql, array($memberId));
+        if (!empty($ret)) {
+            foreach ($ret as $k => $item) {
+                $ret[$k]['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
+                $ret[$k]['img'] = $attachUrl . $item['img'];
+            }
+        }
+        return $ret;
+    }
+
+    // 获取奖品总数
+    public function getUserPrizeCount($memberId)
+    {
+        $sql = "SELECT COUNT(1) FROM ims_games_prize_member pm INNER JOIN ims_games_prize p ON pm.game_prize_id = p.game_prize_id WHERE member_id = ?";
+        $ret = pdo_fetchcolumn($sql, array($memberId));
+        return $ret;
+    }
+
+    // 获取商品详情
+    public function getGoodsDetail($id) {
+        $sql = "SELECT * FROM ims_bj_qmxk_goods WHERE id = ? AND checked = '1' AND status = 1 AND deleted = 0";//checked 是字符型字段，SQL中需加引号，SQL中整形字段也要加上引号，防止SQL致命错误。
+        $ret = pdo_fetch($sql, array($id));
+        return $ret;
+    }
+
+    // 获取用户当天已抽奖次数
+    public function getDrawCount($gameId, $memberId, $startTime)
+    {
+        //$startTime = strtotime(date('Y-m-d'), time());
+        $sql = "SELECT COUNT(draw_recode_id) FROM ims_games_draw_record WHERE member_id = ? AND game_id = ? AND add_time >= ?";
+        return (int)pdo_fetchcolumn($sql, array($memberId, $gameId, $startTime));
+    }
+
+    // 获取用户总积分
+    public function getUserScore($memberId)
+    {
+        $sql = "SELECT (credit1 - credit_used) AS credit1 FROM ims_bj_qmxk_member_info WHERE member_id = ?";
+        return (int)pdo_fetchcolumn($sql, array($memberId));
+    }
+
+    // 商品奖品列表
+    public function prizeItemList($gameId, $attachUrl)
+    {
+        $sql = "SELECT p.prize_id, p.type, p.img, p.prize_item, p.show_item, p.displayorder, g.marketprice, g.title FROM ims_games_prize p " .
+            "LEFT JOIN ims_bj_qmxk_goods g ON p.prize_id = g.id  WHERE p.game_id = ? AND p.type = 'prize_goods' AND p.status = 1 ORDER BY p.displayorder ASC";
+        $ret = pdo_fetchall($sql, array($gameId));
+        if (!empty($ret)) {
+            foreach ($ret as $k => $item) {
+                $ret[$k]['img'] = $attachUrl . $item['img'];
+                //$ret[$k]['url'] = 'slmall://goods/item.json?goodsId=' . $item['prize_id'];
+            }
+        }
+        return $ret;
+    }
+
+    // 优惠券奖品列表
+    public function prizeCouponList($gameId, $attachUrl)
+    {
+        $sql = "SELECT prize_id, type, img, prize_item, show_item, displayorder FROM ims_games_prize WHERE game_id = ? AND type = 'voucher' AND status = 1 ORDER BY displayorder ASC";
+        $ret = pdo_fetchall($sql, array($gameId));
+        if (!empty($ret)) {
+            foreach ($ret as $k => $coupon) {
+                $ret[$k]['img'] = $attachUrl . $coupon['img'];
+            }
+        }
+        return $ret;
+    }
+
+    // 所有奖品列表
+    public function prizeList($gameId, $attachUrl)
+    {
+        $sql = "SELECT game_prize_id, prize_id, type, img, prize_item, show_item, displayorder, odds, limit_num FROM ims_games_prize WHERE game_id = ? AND status = 1 ORDER BY displayorder ASC";
+        $ret = pdo_fetchall($sql, array($gameId), 'game_prize_id');
+        if (!empty($ret)) {
+            foreach ($ret as $k => $v) {
+                $ret[$k]['img'] = $attachUrl . $v['img'];
+            }
+        }
+        return $ret;
+    }
+
+    // 奖品已用库存列表
+    public function prizeUsedList($gameId, $startTime)
+    {
+        $sql = "SELECT p.game_prize_id, COUNT(1) AS count FROM ims_games_prize_member pm INNER JOIN ims_games_prize p ON pm.game_prize_id = p.game_prize_id " .
+            "WHERE pm.game_id = ? AND pm.add_time >= ? GROUP BY p.game_prize_id";
+        $ret = pdo_fetchall($sql, array($gameId, $startTime), 'game_prize_id');
+        return $ret;
+    }
+
+    // 插入抽奖记录
+    public function addDrawPrizeRecord($data)
+    {
+        $ret = pdo_insert('games_draw_record', $data);
+        return $ret ? pdo_insertid() : false;
+    }
+
+    // 插入中奖纪录
+    public function addWinnerRecord($data)
+    {
+        $ret = pdo_insert('games_prize_member', $data);
+        return $ret ? pdo_insertid() : false;
+    }
+
+    // 发送优惠券
+    public function addVoucher($data)
+    {
+        $ret = pdo_insert('bj_qmxk_voucher_user', $data);
+        return $ret ? pdo_insertid() : false;
+    }
+
+    // 获取优惠券详情
+    public function getVoucher($voucherId)
+    {
+        $sql = "select * from ims_bj_qmxk_voucher where id = ?";
+        $ret = pdo_fetch($sql, array($voucherId));
+        return $ret;
+    }
+
+    // 获取收获地址
+    public function getAddress($addressId) {
+        $sql = "SELECT * FROM ims_bj_qmxk_address WHERE id = ?";
+        $ret = pdo_fetch($sql, array($addressId));
+        return $ret;
+    }
+
+}

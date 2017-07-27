@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>我的奖品</title>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/reset.css">
+	<script src="js/flexible.js"></script>
+	<script src="js/jquery-1.11.3.js"></script>
+	<script src="js/jquery.lazyload.js?v=1.9.1"></script>
+	<script type="text/javascript" src="js/index.js?v=2017.7.6"></script>
+</head>
+<body>
+	<div class="header">
+		<a href="game.html">< 回到首页</a>
+		<img src="images/bg.png" alt="">
+	</div>
+	<div class="main">
+		<div class="tab">
+		 	<div class="tab_left">
+		 	    <img src="images/win.png" alt="" class="win">
+		 		<img src="images/yellow.png" alt="" class="tab">
+		 		<span class="price">我的奖品</span>
+		 	</div>
+		 	<div class="tab_right">
+		 	    <img src="images/win.png" alt="" class="win">
+		 		<img src="images/red.png" alt="" class="tab">
+		 		<span class="recent">最近领奖</span>
+		 	</div>	 	
+	 	</div>
+	 	<div class="main_bot">
+	 	 	<div class="con one">
+	 	 		<ul>
+	 	 			<!-- <div class="no_zj">
+	 	 				<img class="fight" src="images/fight.png">
+	 	 				<div class="btn">去砸蛋</div></a>
+	 	 			</div> -->
+	 	 			<!-- <li>
+	 	 				<div class="meed">
+	 	 					<img src="images/li-left.png" alt="">
+	 	 				</div>
+	 	 				<div class="text">
+	 	 					<div class="text_left">
+	 	 						<h3>砸中一部苹果多功能智能手机</h3>
+	 	 						<p><span>2017-6-30</span>17:55</p>
+	 	 					</div>
+	 	 					<a href="#" class="go0">去领奖</a>
+	 	 				</div>
+	 	 			</li> -->
+	 	 		</ul>
+	 	 	</div>
+		 	<div class="con two">
+		 		<ul>
+		 			<!-- <li>
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li>
+		 			<li>
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li>
+		 			<li>
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li>
+		 			<li>
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li>
+		 			<li>
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li>
+		 			<li>
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li>
+		 			<li>
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li>
+		 			<li class="last">
+		 				<span>w***18</span>
+		 				<div class="txt">
+		 					<h3>砸中一部苹果多功能智能手机</h3>
+							<p><i>2017-6-30</i>17:55</p>
+		 				</div>
+		 			</li> -->
+		 		</ul>
+		 	</div>
+		</div>
+ 	</div>
+		 
+</body>
+<script>
+$(function(){
+	  $(".con").eq(0).show();
+	  $(".tab_left .win").show();
+	  $(".tab_right .win").hide();
+	  $(".tab div").click(function(){
+	    var num =$(".tab div").index(this);
+	    $(".con").hide();
+	    $(".con").eq(num).show();
+
+	    $(this).find(".tab").attr("src","images/yellow.png");
+	    $(this).siblings('div').find(".tab").attr("src","images/red.png");
+
+	    $(this).css({'z-index':'11'}); 
+	    $(this).siblings('div').css({'z-index':'10'}); 
+
+	    $(this).siblings('div').find(".win").hide();
+	    $(this).find("span").css({'left':'1.333333rem'});
+	    $(this).find("span").css({'color':'#e25252'});
+	    $(this).siblings('div').find("span").css({'left':'0.853333rem'});
+	    $(this).siblings('div').find("span").css({'color':'#ffe6be'});
+	    $(this).find(".win").show();	    
+	  })
+})
+	
+</script>
+</html>

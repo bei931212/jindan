@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>顺联动力招商入驻要求</title>
+    <style>
+*{margin:0;
+padding:0;}
+
+a{text-outline:none;}
+body{
+		font-family: "PingHei", "Microsoft Yahei", "Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica", "Arial", "Verdana", "sans-serif";
+}
+.main_right{
+	height:100%;
+	width:100%;
+	background-color:#fff;
+	}
+.main_right_b{
+	padding:1%;
+	}
+
+
+.main_right_b>h2{
+		line-height:40px;
+		font-size:28px;
+		color:#ed6d00;
+		}
+
+.main_right_b p{
+	text-indent:32px;
+	font-size:16px;
+	line-height:28px;
+	width:98%;
+	color:#181818;
+	text-align:justify;
+	}
+.explain{
+	text-indent:32;
+	}
+.main_right_b h3{
+		line-height:40px;
+		font-size:20px;
+		color:#333;
+
+		}
+.main_right_b .last{
+		color:#ed6d00;
+		padding-bottom:20px;
+
+		}
+.main_right_b h5{
+		line-height:26px;
+		font-size:16px;
+		color:#333;
+		font-weight:normal;
+
+		}
+.main_right_b .content{
+	border-right:1px #666 solid;
+	border-top:1px #666 solid;
+	border-bottom:1px #666 solid;
+
+	width:100%;}
+
+.main_right_b .content th{
+	border-left:1px #666 solid;
+	border-bottom:1px #666 solid;
+	line-height:30px;
+	font-size:14px;
+	color:#181818;
+	}
+.main_right_b .content td{
+	border-left:1px #666 solid;
+		height:20px;
+	font-size:14px;
+	color:#181818;
+
+	}
+.main_right_b .tel{
+	width:100%;
+	border-right:1px #666 solid;
+	border-top:1px #666 solid;
+	margin-bottom:20px;
+
+	}
+.main_right_b .tel tr td{border-bottom:1px #666 solid;
+border-left:1px #666 solid;
+text-align:center;
+		height:36px;
+	font-size:14px;
+	color:#181818;
+}
+
+.main_right_b .tel tr td:nth-of-type(2){
+	color:blue;
+	}
+.main_right_b .tel tr th{
+	border-bottom:1px #666 solid;
+border-left:1px #666 solid;
+	line-height:40px;
+	font-size:18px;
+	color:#181818;
+}
+
+
+
+.main_right_b p span{
+		font-size:16px;
+	line-height:28px;
+
+	padding-left:1%;
+	}
+.main_right_b p span a{
+	color:#666;
+	}
+.main_right_b p span a:hover{
+	text-decoration:underline;
+	}
+
+
+    </style>
+</head>
+<body>
+<div class="main_right">
+
+    <div class="line"></div>
+    <div class="clear"></div>
+
+
+    <div class="main_right_b">
+        <h2>诚邀厂商 共赢未来</h2>
+
+        <h3>招商要求</h3>
+        <p>一、必须是工厂企业（不对接任何代理）；</p>
+        <p>二、五证齐全【营业执照、税务登记证（国税、地税）、商标注册证、质检报告、组织机构代码证】；</p>
+        <p>三、需要有正规网页图片（类似天猫或者京东的产品图片）；</p>
+        <p>四、遵守我国现行法律法规，从事正当行业买卖且未有不良或违反法律法规行为记录的法人、组织和自然人；</p>
+        <p>五、所提供出售商品符合国家有关规定，禁止出售违法违规及侵害消费者利益的不合格商品；</p>
+        <p>六、商家对签约合同内所附属信息的真实性、完整性和合法性提供保证责任；</p>
+        <p>七、按照入驻顺联动力商城的合约要求，切实履行所签署认可的义务条款。</p>
+        <h3>招商产品类型</h3>
+        <p>日化用品、服装、电子产品、机电设备、环保材料、五金制品、办公司用品、厨卫家居、工艺品、农产品、体育用品、儿童用品、运动户外等。
+        </p>
+
+        <p><strong>注：由于电话系统繁忙不能及时接听，您可通过以下所属分类发送您的公司资料产品价格清单以及商品链接到指定邮箱，同时请您保证产品证件齐全,本公司招商部门将会进行严格的审核，审核通过会及时联系您</strong>
+        </p>
+        <h3>邮箱内容格式</h3>
+
+        <table cellpadding="0" cellspacing="0" class="content">
+            <tr>
+                <th width="10%">公司名称</th>
+                <th width="10%">是否厂家</th>
+                <th width="10%">主要产品</th>
+                <th width="10%">特色和优势</th>
+                <th width="10%">快递仓库位置</th>
+                <th width="15%">最大日处理订单能力</th>
+                <th width="35%">天猫、淘宝、京东店铺等在其他商城产品链接</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+
+            </tr>
+        </table>
+
+        <h3>招商部联系方式</h3>
+        <table cellpadding="0" cellspacing="0" class="tel">
+            <tr>
+                <th width="16%">类别</th>
+                <th width="17%">电话</th>
+                <th width="17%">邮箱</th>
+            </tr>
+            <tr>
+                <td>服装、母婴、医疗器械</td>
+                <td>0578-3122796</td>
+                <td>3226721340@qq.com</td>
+            </tr>
+            <tr>
+                <td>箱包、鞋、运动户外、珠宝配饰</td>
+                <td>0578-3122583</td>
+                <td>3299038442@qq.com</td>
+            </tr>
+            <tr>
+                <td>数码、家电、化妆品(含美容工具)</td>
+                <td>0571-85357260</td>
+                <td>2918342067@qq.com</td>
+            </tr>
+            <tr>
+                <td>居家日用(建材、家具、百货、日化)</td>
+                <td>0578-3122587</td>
+                <td>2182975065@qq.com</td>
+            </tr>
+            <tr>
+                <td>食品、保健品、汽车用品、五金</td>
+                <td>0579-3122963</td>
+                <td>2668615398@qq.com</td>
+            </tr>
+        </table>
+        <h5><strong>注：</strong>招商在线时间：上午9：00—12：00 下午13：00—17：00</h5>
+        <h5>顺联动力招商部专人负责指定类目产品招商,有意合作的厂商按照指定类目联系招商专员，洽谈入驻事宜。</h5>
+        <h3 class="last">顺联动力商城感谢您的支持，期待您的加盟！</h3>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<?php
+
+class CheckIn extends My {
+
+	//签到状态
+	public function status() {
+		global $_W;
+
+		//最后签到数据
+		$user_lastsign_info = pdo_fetch("SELECT * FROM `ims_xsign_record` WHERE member_id='{$_W['member_id']}' ORDER BY sign_time DESC LIMIT 1");
+
+		$today_begin = strtotime('today');
+		$today_end = $today_begin + 86400;
+
+		//今天是否签到
+		$today_is_singed = ($user_lastsign_info['sign_time'] >= $today_begin && $user_lastsign_info['sign_time'] < $today_end) ? 'yes' : 'no';
+
+		//连续签到天数
+		$continue_sign_days = $user_lastsign_info['continue_sign_days'];
+
+		//累计签到天数
+		$all_sign_days = $user_lastsign_info['total_sign_num'];
+
+        $member_info = pdo_fetch("SELECT credit1, credit_used FROM `ims_bj_qmxk_member_info` WHERE member_id='{$_W['member_id']}'");
+        $credit1 = $member_info['credit1'] - $member_info['credit_used'];
+
+		$rule = "  1、APP和微商城每天可签到各一次\n  2、每次签到各+2积分";
+
+
+		/**签到页广告位**/
+
+		$sql = '/*wangdingyi*/SELECT 
+					co.adv_cimg as img, 
+					co.adv_ctype as type, 
+					co.adv_citemId as itemId
+				FROM 
+					ims_bj_qmxk_advert_container ad 
+					LEFT JOIN ims_bj_qmxk_advert_container_content co ON ad.adv_id = co.adv_id 
+				WHERE co.adv_cstatus=1 AND (ad.adv_status=2 OR ad.adv_status=3) AND ad.adv_sign =:sign ORDER BY co.adv_csort DESC';
+		$ad1 = pdo_fetchall($sql,array('sign'=>'QD1'));
+		foreach ($ad1 as  $key=>$entity)
+        {
+            $entity['img']=$_W['attachurl'].$entity['img'].'_750x10000.jpg?75';
+            $ad1[$key]=$entity;
+        }
+		$ad2 = pdo_fetchall($sql,array('sign'=>'QD2'));
+		foreach ($ad2 as  $key=>$entity)
+        {
+            $entity['img']=$_W['attachurl'].$entity['img'].'_750x10000.jpg?75';
+            $ad2[$key]=$entity;
+        }
+
+        $adlist = compact('ad1','ad2');
+        /**签到页广告位结束**/
+
+
+        /**签到页商品**/
+        $gs1 = $gs2 = $gs3 = array();
+
+        $goodsidSql = '/*wangdingyi*/SELECT block_data,block_title FROM ims_bj_qmxk_blocks WHERE block_key=:key';
+        $sql = '/*wangdingyi*/SELECT  `id` AS goodsId, `title`, `thumb` as img,goodssn,marketprice,productprice FROM ims_bj_qmxk_goods WHERE id IN (%s) AND deleted=0 AND `status`=1';
+        $block = pdo_fetch($goodsidSql,array('key'=>'QD1'));
+        $gs1['title'] = $block['block_title'];
+        $gids = self::saveIds($block['block_data']);
+        if(!empty($gids)){
+        	$goods1 = pdo_fetchall(sprintf($sql, $gids));
+			foreach ($goods1 as  $key=>$entity)
+	        {
+	            $entity['img']=$_W['attachurl'].$entity['img'].'_300x300.jpg';
+	            $gs1['data'][$key]=$entity;
+	        }
+        }
+        if(empty($gs1['data'])) $gs1 = null;
+		
+
+        $block = pdo_fetch($goodsidSql,array('key'=>'QD2'));
+        $gs2['title'] = $block['block_title'];
+        $gids = self::saveIds($block['block_data']);
+        if(!empty($gids)){
+			$goods2 = pdo_fetchall(sprintf($sql, $gids));
+			foreach ($goods2 as  $key=>$entity)
+	        {
+	            $entity['img']=$_W['attachurl'].$entity['img'].'_300x300.jpg';
+	            $gs2['data'][$key]=$entity;
+	        }
+	    }
+	    if(empty($gs2['data'])) $gs2 = null;
+
+        $block = pdo_fetch($goodsidSql,array('key'=>'QD3'));
+        $gs3['title'] = $block['block_title'];
+        $gids = self::saveIds($block['block_data']);
+        if(!empty($gids)){
+			$goods3 = pdo_fetchall(sprintf($sql, $gids));
+			foreach ($goods3 as  $key=>$entity)
+	        {
+	            $entity['img']=$_W['attachurl'].$entity['img'].'_300x300.jpg';
+	            $gs3['data'][$key]=$entity;
+	        }
+	    }
+	    if(empty($gs3['data'])) $gs3 = null;
+
+        $goodsList = compact('gs1','gs2','gs3');
+         /**签到页商品结束**/
+
+
+		$return = array(
+			'today_is_singed'	=> $today_is_singed,
+			'continue_sign_days'	=> intval($continue_sign_days),
+			'all_sign_days'	=> intval($all_sign_days),
+			'credit1'	=> intval($credit1),
+			'rule'	=> $rule,
+			'adlist' => $adlist,
+			'goodslist' => $goodsList
+		);
+
+		return self::responseOk($return);
+	}
+
+	/**
+    * 转成int
+    */
+    private function saveIds($ids){
+        if(empty($ids)) return '';
+        $ids = is_array($ids)? $ids : explode(',', trim($ids, ','));
+        $ids_end = array();
+
+        foreach ($ids as $key => $val) {
+            $ids_end[] = intval($val);
+        }
+
+        return implode(',', $ids_end);
+    }
+
+	//签到,待进一步优化
+	public function respond() {
+		global $_W;
+
+		$credit = 2; //签到奖励
+
+		
+		$memc_key = 'APP_CHECKIN_'.$_W['member_id'];
+		$ret = $_W['mc']->get($memc_key);
+		if(!$ret){
+			$_W['mc']->set($memc_key, 'check', MEMCACHE_COMPRESSED, 600);
+			$current_date = strtotime('today');
+			//检查今天是否签到
+			$today_usersigned_num = pdo_fetchcolumn("SELECT COUNT(*) FROM `ims_xsign_record` WHERE member_id='{$_W['member_id']}' AND `sign_time`>='{$current_date}'");
+			$today_usersigned_num = intval($today_usersigned_num);
+			if($today_usersigned_num > 0) {
+				return self::responseError(10202, '今日签到次数用完了哟~~');
+			}else{
+                            if(defined('PROMOTION_MODEL')) {
+                                return self::responseError(10201, '现在不是签到时间哟~~');
+                            }
+                            else {
+				$insert = array(
+					'member_id' => $_W['member_id'],
+					'rid' => 0,
+					'fromuser' => '',
+					'username' => '',
+					'sign_time' => time(),
+					'credit' => $credit,
+				);
+				pdo_insert('xsign_record', $insert);
+				CreditModel::getInstance()->addLog($_W['member_id'], ConfigModel::CREDIT_APP_SIGNUP_ACTID);
+				return self::responseOk('签到成功，获得'.$credit.'个积分');
+                                
+                            }//end if defined
+			}
+		}else{
+			return self::responseError(10202, '今日签到次数用完了哟~~');
+		}
+		return self::responseOk('签到成功');
+		/*
+		global $_W;
+
+		//return self::responseError(10200, '签到功能维护中...');
+
+		if(defined('PROMOTION_MODEL')) {
+			return self::responseError(10201, '现在不是签到时间哟~~');
+		}
+
+		$now = time();
+		$times = 1; //每日签到次数
+		$credit = 2; //签到奖励
+		$tsignnum = 30; //累计签到xx天
+		$taward = 30;//累计签到xx天获得的奖励
+		$csignnum = 90; //连续签到xx天
+		$caward = 90; //连续签到xx天获得的奖励
+		$osignnum = 365; //第一名签到xx天
+		$oaward = 965; //第一名获得奖励xx
+		$current_date = strtotime('today');
+
+		//检查今天是否签到
+		$today_usersigned_num = pdo_fetchcolumn("SELECT COUNT(*) FROM `ims_xsign_record` WHERE member_id='{$_W['member_id']}' AND `sign_time`>='{$current_date}'");
+		$today_usersigned_num = intval($today_usersigned_num);
+		if($today_usersigned_num > 0) {
+			return self::responseError(10202, '今日签到次数用完了哟~~');
+		}
+
+		//计算今天所有人签到次数
+		$today_allsigned_num = pdo_fetchcolumn("SELECT COUNT(*) FROM `ims_xsign_record` WHERE `sign_time`>='{$current_date}'");
+		$today_allsigned_num = intval($today_allsigned_num);
+		$today_user_rank = $today_allsigned_num + 1;
+
+		$user_lastsign_info = pdo_fetch("SELECT * FROM `ims_xsign_record` WHERE member_id='{$_W['member_id']}' ORDER BY sign_time DESC LIMIT 1");
+		$user_last_sign_time = $user_lastsign_info['last_sign_time'];
+		//$user_last_sign_rank = $user_lastsign_info['last_sign_rank'];
+		$user_continue_sign_days = $user_lastsign_info['continue_sign_days'];
+		$user_maxcontinue_sign_days = $user_lastsign_info['maxcontinue_sign_days'];
+		$user_first_sign_days = $user_lastsign_info['first_sign_days'];
+		$user_maxfirst_sign_days = empty($user_lastsign_info['maxfirst_sign_days'])?0:$user_lastsign_info['maxfirst_sign_days'];
+		$user_allsign_num = $user_lastsign_info['total_sign_num'];
+		$user_maxallsign_num = $user_lastsign_info['maxtotal_sign_num'];
+
+		if( $user_last_sign_time == 0){
+			$user_last_sign_time = $now;
+		}
+        $qdtime=time()-strtotime(date('Y-m-d 00:00:00',time()))+86400;//统计到上一天是否有签到 wumengsheng20170325
+		if( ($now - $user_last_sign_time) < $qdtime ){
+			$continue_sign_days = $user_continue_sign_days + 1;
+		} else {
+			$continue_sign_days = 0;
+		}
+		if( $continue_sign_days < $user_maxcontinue_sign_days ){
+			$maxcontinue_sign_days = $user_maxcontinue_sign_days;
+		} else {
+			$maxcontinue_sign_days = $continue_sign_days;
+		}
+		if($today_user_rank == 1){
+			$first_sign_days = $user_first_sign_days + 1;
+			$maxfirst_sign_days = $user_maxfirst_sign_days + 1;
+		} else {
+			$first_sign_days = $user_first_sign_days;
+			$maxfirst_sign_days = $user_maxfirst_sign_days;
+		}
+		$total_sign_num = $user_allsign_num + 1;
+		$maxtotal_sign_num = $user_maxallsign_num + 1;
+		$insert = array(
+			'member_id' => $_W['member_id'],
+			'rid' => 0,
+			'fromuser' => '',
+			'username' => '',
+			'today_rank' => $today_user_rank,
+			'sign_time' => $now,
+			'credit' => $credit,
+		);
+		pdo_insert('xsign_record', $insert);
+		pdo_query("UPDATE `ims_bj_qmxk_member_info` SET credit1=credit1+{$credit} WHERE member_id='{$_W['member_id']}'");
+
+		$update = array(
+			'last_sign_time' => $now,
+			//'last_sign_rank' => $today_user_rank,
+			'continue_sign_days' => $continue_sign_days,
+			'maxcontinue_sign_days' => $maxcontinue_sign_days,
+			'total_sign_num' => $total_sign_num,
+			'maxtotal_sign_num' => $maxtotal_sign_num,
+			'first_sign_days' => $first_sign_days,
+			'maxfirst_sign_days' => $maxfirst_sign_days,
+		);
+		pdo_update('xsign_record', $update, array('member_id' => $_W['member_id']));
+
+		$user_lastsign_info = pdo_fetch("SELECT * FROM `ims_xsign_record` WHERE member_id='{$_W['member_id']}' ORDER BY sign_time DESC LIMIT 1");
+
+		$user_newsign_info = $user_lastsign_info;
+		$user_newsign_info['continue_sign_days'] = $update['continue_sign_days'];
+		$user_newsign_info['first_sign_days'] = $update['first_sign_days'];
+		$user_newsign_info['total_sign_num'] = $update['total_sign_num'];
+
+		$user_newcontinue_sign_days = $user_newsign_info['continue_sign_days'];
+		$user_newfirst_sign_days = $user_newsign_info['first_sign_days'];
+		$user_newtotal_sign_num = $user_newsign_info['total_sign_num'];
+		if($user_newsign_info['id']){
+			$status = 1;
+			if($user_newcontinue_sign_days == $csignnum){
+				$tip1 = "\n\n连续签到奖励";
+				$user_newcontinue_sign_days = 0;
+				$type = '连续签到奖';
+				$credit=$credit+$caward;
+				$unsetrecord = array(
+					'continue_sign_days' => $user_newcontinue_sign_days,
+					'first_sign_days' => $user_newfirst_sign_days,
+					'total_sign_num' => $user_newtotal_sign_num,
+				);
+				pdo_update('xsign_record', $unsetrecord, array('member_id' => $_W['member_id']));
+				//@sime
+				pdo_query("UPDATE `ims_bj_qmxk_member_info` SET credit1=credit1+{$caward} WHERE member_id='{$_W['member_id']}'");
+			}
+			if($user_newfirst_sign_days == $osignnum){
+				$tip2 = "\n\n第一累计奖励";
+				$user_newfirst_sign_days = 0;
+				$type = '第一累计奖';
+
+				$credit=$credit+$oaward;
+				$unsetrecord = array(
+					'continue_sign_days' => $user_newcontinue_sign_days,
+					'first_sign_days' => $user_newfirst_sign_days,
+					'total_sign_num' => $user_newtotal_sign_num,
+				);
+				pdo_update('xsign_record', $unsetrecord, array('member_id' => $_W['member_id']));
+				//@sime
+				pdo_query("UPDATE `ims_bj_qmxk_member_info` SET credit1=credit1+{$oaward} WHERE member_id='{$_W['member_id']}'");
+			}
+			if($user_newtotal_sign_num == $tsignnum){
+				$tip3 = "\n\n累计签到奖励";
+				$user_newtotal_sign_num = 0;
+				$type = '累计签到奖';
+				$credit=$credit+$taward;
+				$unsetrecord = array(
+					'continue_sign_days' => $user_newcontinue_sign_days,
+					'first_sign_days' => $user_newfirst_sign_days,
+					'total_sign_num' => $user_newtotal_sign_num,
+				);
+				pdo_update('xsign_record', $unsetrecord, array('member_id' => $_W['member_id']));
+				//@sime
+				pdo_query("UPDATE `ims_bj_qmxk_member_info` SET credit1=credit1+{$taward} WHERE member_id='{$_W['member_id']}'");
+			}
+
+		//	$tip4 = $credit.'个积分';
+			$tip = "签到成功!\n\n您已连续累计".($user_maxfirst_sign_days+1)."次。\n\n本次签到，您获得了的奖励是：".$tip1.$tip2.$tip3."\n\n奖励".$credit."个积分";
+		//	$tip = '签到成功，获得'.$tip4;
+		} else {
+			$status = 0;
+			$tip = '签到失败';
+		}
+
+		return self::responseOk('签到成功，获得'.$credit.'个积分');
+		*/
+	}
+
+	//签到记录
+	public function checkinLog() {
+		global $_W;
+
+		$month = trim($_GET['month']);
+		if(!preg_match('/^(\d\d\d\d)(\d\d)$/', $month, $matches)) {
+			return self::responseError(400, 'Parameter [month] is missing.');
+		}
+
+		if(empty($matches[1]) || empty($matches[2])) {
+			return self::responseError(400, 'Parameter [month] is missing.');
+		}
+
+		$start_time = strtotime($matches[1].'-'.$matches[2].'-01 00:00:00');
+		$end_time = strtotime($matches[1].'-'.$matches[2].'-01 00:00:00 +1 month');
+
+		//获取用户签到记录
+		$month_sign = pdo_fetchall("SELECT FROM_UNIXTIME(`sign_time`,'%e') AS day FROM `ims_xsign_record` WHERE member_id='{$_W['member_id']}' AND `sign_time`>='{$start_time}' AND `sign_time`<'{$end_time}'", array(), 'day', true);
+/*
+		if($_W['member_id'] == '1181306' || $_W['member_id'] == '42577687') {
+			for($i = 1; $i<=date('j'); $i++) {
+				if(rand (0 , 1)) {
+					$month_sign[$i] = 1;
+				}
+			}
+		}
+*/
+		$today = date('j');
+		$this_month = date('Ym');
+		$days = date('t', $start_time);
+
+		$logs = array();
+		for($i = 1; $i<=$days; $i++) {
+			$signed = 'no';
+			if($month_sign[$i]) {
+				$signed = 'yes';
+			}
+			$logs[] = array(
+				'day' => $i,
+				'signed' => $signed,
+				'is_today' => ($month == $this_month && $i==$today) ? 'yes' : 'no',
+			);
+		}
+
+		return self::responseOk($logs);
+	}
+}

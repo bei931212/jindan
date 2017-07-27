@@ -1,0 +1,27 @@
+/* css 重置 */
+body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, a, code, em, img, q, small, strong, dd, dl, dt, li, ol, ul, fieldset, form, label, table, tbody, tr, th, td, input {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	list-style: none;
+}
+body {
+	font-family: "Microsoft Yahei","Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+header, section, footer, img, input {
+	display: block;
+	margin: 0;
+	padding: 0
+}
+a {
+	text-decoration: none!important;
+}
+textarea, input[type="button"], input[type="text"] {
+	resize: none;
+	outline: 0;
+	-webkit-appearance: none;/*静止默认渲染*/
+	white-space: pre-wrap;/*保留空白符序列，但是正常地进行换行*/
+	word-wrap: break-word;/*在长单词或 URL 地址内部进行换行*/
+}
+/*初始化字体大小*/
+*{font-size:12px;}

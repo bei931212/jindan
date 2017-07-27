@@ -1,0 +1,264 @@
+body{
+	background: #f36f6f;
+	width: 100%;
+	min-height: 100vh;
+	/*height:26.666667rem;*/
+	/*overflow: hidden;*/
+	padding-bottom: 1.33rem!important;
+}
+.header img{
+	width: 100%;
+	display: block;
+}
+.header a{
+	position: absolute;
+	width: 2.16rem;
+	height: 0.613333rem;
+	text-align: center;
+	line-height:0.613333rem;
+	display: inline-block;
+	color:#fed2d2;
+	font-size: 0.346667rem;
+	border-radius:0.666667rem;	
+	background:rgba(49,49,49,0.5);
+	left:0.426667rem;
+	top:0.453333rem;
+	box-sizing: border-box;
+}
+
+/* tab切换样式 */
+.main{
+	overflow: hidden;
+	padding:0 0.133333rem;
+	box-sizing: border-box;
+}
+.tab{
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	height: 1.12rem;
+	font-size: 0;
+}
+.tab_left{
+	width:4.213333rem;
+	height: 1.12rem;
+	position: absolute;
+	left:0;
+	z-index: 11;
+}
+.tab_right{
+	position: absolute;
+	left:3.68rem;
+	z-index: 10;
+	width:4.213333rem;
+	height: 1.12rem;
+}
+.tab{
+	width: 100%;
+	display: block;
+	border:0;
+}
+.price{
+	font-size:0.48rem;
+	color:#e25252;
+	position: absolute;
+	z-index: 100;
+	top:0.26rem;
+	left: 1.333333rem;
+}
+.recent{
+	font-size:0.48rem;
+	color:#ffe6be;
+	position: absolute;
+	z-index: 100;
+	top:0.26rem;
+	left: 1.333333rem;
+}
+.win{
+	position: absolute;
+	z-index: 100;
+	top:0.133333rem;
+	left:0.466667rem;
+	width:0.8rem;
+	height:0.8rem;	
+	display: none;
+}
+/* 获奖主体样式 */
+.main_bot{
+	width: 100%;
+	background: #ffe6be;
+	border-radius: 0.4rem;
+	border-top-left-radius:0;
+	padding:0.333333rem 0.16rem;
+	box-sizing: border-box;
+	position: relative;
+	z-index: 999;
+	top: -0.04rem;
+}
+.main_bot .con{
+	width:100%;
+	height: 100%;
+}
+.main_bot ul{
+	overflow: hidden;
+}
+.main_bot ul li{
+	float: left;
+}
+
+/* 我的奖品样式 */
+.one li{
+	margin-bottom:0.173333rem;
+}
+.one .meed{
+	overflow: hidden;
+	width: 2.08rem;
+	height: 2.08rem;
+	background: #fff;
+	border-radius: 0.133333rem;
+	margin-right: 0.066667rem;
+	float: left;
+}
+.one .meed img{
+	width: 100%;
+}
+.one .text{
+	width:7.24rem;
+	height: 2.08rem;
+	padding: 0.666667rem 0.306667rem 0 0.213333rem;
+	border-radius: 0.133333rem;
+	box-sizing: border-box;
+	background:rgba(255,255,255,0.8);
+	float: left;
+}
+.text_left{
+	width:4.4rem;
+	float: left;
+}
+.text_left h3{
+	font-size: 0.35rem;
+	line-height: 0.506667rem;
+	height: 0.506667rem;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+.text_left p{
+	font-size: 0.32rem;
+	color:#bfbfbf;
+	height: 0.453333rem;
+	display: inline-block;
+}
+.text_left p  span{
+	font-size: 0.293333rem;
+	color:#bfbfbf;
+	display: inline-block;
+	margin-right: 0.373333rem;
+}
+.one .text a{
+	display: block;
+	color:#fff;
+	width:2.146667rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
+	float: left;
+	border-radius:0.666667rem;
+	font-size: 0.426667rem;
+	text-align: center;
+	margin:0 0 0.693333rem 0.066667rem;
+}
+.one .text span{
+	display: block;
+	color:#fff;
+	width:2.146667rem;
+	height: 0.8rem;
+	line-height: 0.8rem;
+	float: left;
+	border-radius:0.666667rem;
+	font-size: 0.426667rem;
+	text-align: center;
+	margin:0 0 0.693333rem 0.066667rem;
+}
+/*待领取*/
+.one .text .go0{ 
+	background: #c364f1;
+}
+/*已经领取*/
+.one .text .go1{
+	background: #ff6e6e;
+}
+/*过期*/
+.one .text .go2{ 
+	background: #c9c9c9;
+}
+
+/* 最近获奖样式 */
+.two{
+	background:rgba(255,255,255,0.8);
+	border-radius:0.266667rem;
+	padding:0 0.32rem;
+	box-sizing: border-box;
+	display: none;
+}
+.two li{
+	width:100%;
+	padding:0.3rem 0 0.3rem 0;
+	box-sizing: border-box;
+	border-bottom: 1px dashed #858585;
+}
+.two .last{
+	border:none;
+}
+.two li span{
+
+	font-size: 0.37rem;
+	color:#535353;
+	display: block;
+}
+.two li .txt{
+	height: 0.67rem;
+	line-height: 0.67rem;
+}
+.two li h3{
+	display: inline-block;
+	font-size: 0.35rem;
+	color:#f36f6f;
+	float: left;
+}
+.two li p{
+	display: inline-block;
+	float: right;
+
+	font-size: 0.32rem;
+	color:#bfbfbf;
+}
+.two li p i{
+	font-size: 0.24rem;
+	color:#bfbfbf;
+	font-style: normal;
+	margin-right: 0.373333rem;
+}
+.one .no_zj{
+	height: 8.0rem;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.one .no_zj .fight{
+	width: 4.27rem;
+	height: auto;
+	margin-bottom: 0.4rem;
+}
+.one .no_zj .btn{
+	width: 2.93rem;
+	height: 0.73rem;
+	background: #f36f6f;
+	color: white;
+	font-size: 0.43rem;
+	text-align: center;
+	line-height: 0.73rem;
+	border-radius: 0.4rem;
+}

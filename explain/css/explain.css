@@ -1,0 +1,201 @@
+.explain{
+	margin-bottom: 0.67rem;
+}
+.explain .title{
+	height: 3.07rem;
+	background-color:#12dbf3;
+	border-bottom-left-radius: 1.33rem;
+	border-bottom-right-radius: 1.33rem;
+	display: -webkit-flex;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 1.13rem;
+}
+.explain .title img{
+	width: 1.3rem;
+	height: 1.3rem;
+}
+.explain .title span{
+	font-size: 0.65rem;
+	color: white;
+}
+.explain .main_one{
+	margin:0 0.16rem;
+	padding: 0 0.16rem;
+	font-size: 0.32rem;
+	color: #535353;
+	background-image: url(../images/gradient_bg.png);
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+}
+.explain .main_one .mian_title_one{
+	position: relative;
+	top: -0.35rem;
+	height: 0.71rem;
+	line-height: 0.71rem;
+	width: 4.0rem;
+	background-color: #12dbf3;
+	border-radius: 0.67rem;
+	text-align: center;
+	color: white;
+	font-size: 0.36rem;
+}
+.explain .main_one .p{
+	margin-bottom: 0.33rem;
+}
+.tb_pinfeng{
+	width:6.0rem;
+	height: 3.64rem;
+	overflow: hidden;
+}
+.tb_pinfeng .left{
+	float: left;
+	width:3.7rem;
+	overflow: hidden;
+	border:1px solid #ff7108;
+	border-bottom: none;
+}
+.tb_pinfeng .left li{
+	border-bottom:1px solid #ff7108;
+	height: 0.56rem;
+	line-height: 0.56rem;
+	text-align: center;
+	font-size: 0.29rem;
+	color: #ff7108;
+}
+.tb_pinfeng .left .leftop{
+	color:#fff;
+	background: #fd9228;
+}
+.tb_pinfeng .right{
+	float: left;
+	width:2.16rem;
+	overflow: hidden;
+	border:1px solid #ff7108;
+	border-left: none;
+	border-bottom: none;
+}
+.tb_pinfeng .right li{
+	border-bottom:1px solid #ff7108;
+	height: 0.56rem;
+	line-height: 0.56rem;
+	text-align: center;
+	font-size: 0.29rem;
+	color: #ff7108;
+}
+.tb_pinfeng .right .rightop{
+	color:#fff;
+	background: #fd7124;
+}
+.tb_jifeng{
+	width:9.45rem;
+	height:4.14rem;
+	margin:25px 0 0.4rem 0;
+	border:1px solid #ff7108;
+	border-bottom: none;
+	border-right: none;
+}
+.tb_jifeng .jifenleft{
+	width: 2.96rem;
+	float: left;
+	overflow: hidden;
+	border-right: 1px solid #ff7108;
+	box-sizing: border-box;
+}
+.tb_jifeng .jifenleft li{
+	border-bottom:1px solid #ff7108;
+	height: 0.56rem;
+	line-height: 0.56rem;
+	text-align: center;
+	font-size: 0.29rem;
+	color: #ff7108;
+}
+.tb_jifeng .jifenleft .jifenleftop{
+	background: #fd9228;
+	color:#fff;
+}
+.tb_jifeng .jifencenter{
+	width: 1.7rem;
+	float: left;
+	overflow: hidden;
+	border-right: 1px solid #ff7108;
+	box-sizing: border-box;
+}
+.tb_jifeng .jifencenter li{
+	border-bottom:1px solid #ff7108;
+	height: 0.56rem;
+	line-height: 0.56rem;
+	text-align: center;
+	font-size: 0.29rem;
+	color: #ff7108;
+}
+.tb_jifeng .jifencenter .centertop{
+	background: #ff6e21;
+	color:#fff;
+}
+.tb_jifeng .jifenright{
+	width: 4.74rem;
+	float: left;
+	overflow: hidden;
+	border-right:1px solid #ff7108;
+	box-sizing: border-box;
+}
+.tb_jifeng .jifenright li{
+	border-bottom:1px solid #ff7108;
+	height: 0.56rem;
+	line-height: 0.56rem;
+	text-align: center;
+	font-size: 0.29rem;
+	color: #ff7108;
+}
+.tb_jifeng .jifenright .rightop{
+	background: #f95b2c;
+	color:#fff;
+}
+.explain .main_one .p2 span{
+	color: #ff5408;
+}
+.explain .main_two{
+	margin:1.07rem 0.16rem 0;
+	padding: 0 0.16rem;
+	font-size: 0.32rem;
+	color: #535353;
+	background-image: url(../images/gradient_bg.png);
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+}
+.explain .main_two .mian_title_two{
+	position: relative;
+	top: -0.35rem;
+	height: 0.71rem;
+	line-height: 0.71rem;
+	width: 4.0rem;
+	background-color: #12dbf3;
+	border-radius: 0.67rem;
+	text-align: center;
+	color: white;
+	font-size: 0.36rem;
+}
+.explain .main_two p{
+	font-size: 0.32rem;
+	color: #535353;
+}
+.main_two .two_p1{
+	margin-bottom: 0.4rem;
+}
+.main_two .two_p1 span{
+	color: #ff5408;
+}
+.bottom{
+	margin-top: 0.53rem;
+	text-align: center;
+}
+.bottom img{
+	width: 2.96rem;
+	height: 0.6rem;
+}
+.bottom p{
+	font-size: 0.19rem;
+	color: #868686;
+}

@@ -1,0 +1,74 @@
+<?php
+
+class Info extends Api {
+
+//获取最近支付用户
+
+	//检查更新
+	//type=Android|IOS
+	//version=x.x.x
+	public function checkUpdate() {
+
+		$type = trim($_GET['type']);
+		$version = trim($_GET['version']);
+
+		$result = array();
+
+		$result['needUpdate'] = 'no';
+		$result['updateType'] = 'optional';//optional force,升级方式，可选，强制
+		$result['localVersion'] = $version;
+
+		if($result['localVersion'] == '1.1.3') {
+			$result['changeLog'] = " 由于系统原因，请先卸载当前版本，然后在顺联动力官网或者应用市场下载最新版本，\n给您带来不便，敬请谅解，谢谢！\n";
+		} else {
+			$result['changeLog'] = "顺联动力APP华丽升级，Everybody躁起来！\n";
+			$result['changeLog'] .= "追求好东西，是一种本能~\n";
+			$result['changeLog'] .= "在这个天气晴朗、满怀热情的伟大日子里，我们顺联动力APP终于跨入了新的时代，给各位产品汪和程序猿鼓掌吧！\n";
+			$result['changeLog'] .= "新的界面发生了很大的变化，色调冷艳不失温暖，让人如沐春风！\n";
+
+			$result['changeLog'] .= "1、试试用手左右滑动，寻找你想要的。\n";
+			$result['changeLog'] .= "2、特产频道：离家更近，乡味更浓。\n";
+			$result['changeLog'] .= "3、玲琅满目的活动，为你节省更多的钱。\n";
+
+			$result['changeLog'] .= "我们不断改进产品的功能和服务，力求为消费者提供更优质、便捷的购物体验。\n";
+			$result['changeLog'] .= "给我们留下您的反馈和评分吧，您的好评是我们继续做好商城的动力，因为你们，顺联动力变得越来越好！";
+		}
+
+//		$result['newVersion'] = $result['localVersion'] == '1.1.4' ? '1.1.6' : '1.0.0';
+		$result['newVersion'] = '1.5.2';
+		$result['updateType'] = 'optional';
+		if($type == 'IOS') {
+			$result['updateUrl'] = 'https://itunes.apple.com/cn/app/xxx/idxxx?mt=8';
+		} else {
+			if(version_compare($result['localVersion'], $result['newVersion'], '<')) {
+				$result['needUpdate'] = 'yes';
+			}
+			if(self::$platform == 'Android' AND version_compare(self::$device_version, '4.0.0', '<')) {
+				$result['needUpdate'] = 'no';
+			}
+			if(version_compare($result['localVersion'], '1.4.5', '<')) {
+				$result['needUpdate'] = 'yes';
+				$result['updateType'] = 'force';
+			}
+			$result['fileMd5'] = 'fdd43600d7074d7c0fd13c21873f6ddf';
+			$result['updateUrl'] = 'https://down.shunliandongli.com/app/Android_'.$result['newVersion'].'.apk';
+		}
+
+		return self::responseOk($result);
+	}
+
+	//错误日志
+	//type=Android|IOS
+	//version=x.x.x
+	//error_log=string
+	public function errorLog() {
+		$insert['type'] = trim($_POST['type']);
+		$insert['version'] = trim($_POST['version']);
+		$insert['dateline'] = TIMESTAMP;
+		$insert['error_log'] = trim($_POST['error_log']);
+
+		pdo_insert('app_error_log', $insert);
+
+		return self::responseOk('OK');
+	}
+}

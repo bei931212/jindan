@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>砸金蛋</title>
+	<link rel="stylesheet" type="text/css" href="//statics.shunliandongli.com/resource/game/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="//statics.shunliandongli.com/resource/game/css/game.css?v=2017071016">
+	<link rel="stylesheet" type="text/css" href="//statics.shunliandongli.com/resource/game/css/swiper-3.4.2.min.css">
+	<script src="//statics.shunliandongli.com/resource/game/js/flexible.js"></script>
+	<script src="//statics.shunliandongli.com/resource/game/js/jquery-1.11.3.js"></script>
+	<script src="//statics.shunliandongli.com/resource/game/js/jquery.lazyload.js?v=1.9.1"></script>
+	<script src="//statics.shunliandongli.com/resource/game/js/swiper-3.4.2.min.js"></script>
+	<script src="js/game.js?v=2017.7.8"></script>
+	<style>
+		i{
+			font-style: normal!important;
+		}
+	</style>
+</head>
+<body>
+<div class="game_main">
+	
+	<!-- 顶部固定 我的奖品、规则按钮 -->
+	<a href="index.html"><span class="btn_prize fixed_btn">我的奖品</span></a>
+	<span class="btn_rules fixed_btn">规则  &gt;</span>
+
+	<!-- 轮播 -->
+	<div class="swiper-container swiper_box">
+	    <div class="swiper-wrapper">
+	        <!-- <div class="swiper-slide">
+	        	<a href=""><img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1689494948,2275697559&fm=26&gp=0.jpg"></a>
+	        </div>
+	        <div class="swiper-slide">
+	        	<a href=""><img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1689494948,2275697559&fm=26&gp=0.jpg"></a>
+	        </div>
+	        <div class="swiper-slide">
+	        	<a href=""><img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1689494948,2275697559&fm=26&gp=0.jpg"></a>
+	        </div> -->
+	    </div>
+	    <div class="swiper-pagination"></div>
+	</div>
+	
+	<!-- 砸蛋次数 -->
+	<div class="cishu">
+		
+	</div>
+
+
+	<!--  锤子 -->
+	<img class="chuizi"  src="//statics.shunliandongli.com/resource/game/images/chuizi.png">
+
+
+	<!-- 金蛋 -->
+	<div class="box">
+		<div><img class="egg egg_left" src="//statics.shunliandongli.com/resource/game/images/egg.png"></div>
+		<div class="center"><img class="egg egg_center" src="//statics.shunliandongli.com/resource/game/images/egg.png"></div>
+		<div class="right"><img class="egg egg_right" src="//statics.shunliandongli.com/resource/game/images/egg.png"></div>
+	</div>
+
+	<div class="egg_mask">
+		
+	</div>
+
+
+
+
+
+	<!-- 砸单有奖 -->
+	<img class="zadan_btn" src="//statics.shunliandongli.com/resource/game/images/zadan.png">
+
+
+
+	<!-- 获奖展示 -->
+	<div class="award_show">
+		<img class="title_img" src="//statics.shunliandongli.com/resource/game/images/huojiang.png">
+		<a href="index.html"><img class="more" src="//statics.shunliandongli.com/resource/game/images/more.png"></a>
+		<div class="ul_box">
+			<ul>
+				<!-- <li>
+					<span class="name">ws**123</span>
+					<span class="content">砸中一部手机1111</span>
+					<span class="time">2017-6-30  17:02</span>
+				</li>
+				<li>
+					<span class="name">ws**123</span>
+					<span class="content">砸中一部手机</span>
+					<span class="time">2017-6-30  17:02</span>
+				</li>
+				<li>
+					<span class="name">ws**123</span>
+					<span class="content">砸中一部手机</span>
+					<span class="time">2017-6-30  17:02</span>
+				</li>
+				<li>
+					<span class="name">ws**123</span>
+					<span class="content">砸中一部手机</span>
+					<span class="time">2017-6-30  17:02</span>
+				</li>
+				<li>
+					<span class="name">ws**123</span>
+					<span class="content">砸中一部手机</span>
+					<span class="time">2017-6-30  17:02</span>
+				</li>
+				<li>
+					<span class="name">ws**123</span>
+					<span class="content">砸中一部手机</span>
+					<span class="time">2017-6-30  17:02</span>
+				</li> -->
+			</ul>
+		</div>
+	</div>
+
+
+
+	<!-- 玩法介绍 -->
+	<div class="game_rules" id="rules">
+		<img class="title_img" src="//statics.shunliandongli.com/resource/game/images/wanfa.png">
+		<p class="rules_content"></p>
+		<div class="jiantou">
+			<img src="//statics.shunliandongli.com/resource/game/images/jiantou.png">
+		</div>
+	</div>
+
+
+
+	<!-- 奖品展示 -->
+	<div class="prize">
+		<img class="title_img" src="//statics.shunliandongli.com/resource/game/images/jiangpin.png">
+		<div class="coupons">
+			<!-- <img src="images/5.png">
+			<img src="images/10.png">
+			<img src="images/20.png">
+			<img src="images/30.png"> -->
+		</div>
+
+		<div class="prize_main">
+			<!-- <a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a>
+			<a href="">
+				<div class="main_box">
+					<img data-original="images/goods.png">
+					<p>即使低谷和谁的哈佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后佛火锅哦山东鸿过后</p>
+					<span class="good_price">¥<i>5000.0</i></span>
+					<div class="view">点击查看</div>
+				</div>
+			</a> -->
+		</div>
+
+		<p class="no_more">duang~到底了</p>
+	</div>
+
+
+	<!-- 积分不足弹窗 -->
+	<div class="insufficient_mask">
+		<div class="insufficient">
+			<div class="radius">
+				对不起
+			</div>
+
+			<i>您的积分不足欢迎明天再来</i>
+			<span>确定</span>
+		</div>
+	</div>
+
+
+	<!-- 砸蛋确认弹窗 -->
+	<div class="confirm">
+		<div class="insufficient">
+			<div class="radius">
+				亲～注意
+			</div>
+			<span class="jifen"></span>
+			<div class="confirm_btn">
+				<div class="left">取消</div>
+				<div class="right">立即砸蛋</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- 中奖弹窗 -->
+	<div class="win">
+		<img class="guang" src="//statics.shunliandongli.com/resource/game/images/guang.png">
+		<div class="win_content">
+			<div class="flex_center">
+				<img src="//statics.shunliandongli.com/resource/game/images/z.png">
+				<div>
+					<span>恭喜你获得</span>
+					<p class="n_r">手机一部手机一部手机手机一部手机一部手机</p>
+					<a class="zj_a" href=""><img src="//statics.shunliandongli.com/resource/game/images/z_btn.png"></a>
+				</div>
+				<!-- 图层关闭按钮 -->
+				<span class="close_btn"></span>
+			</div>
+		</div>
+	</div>
+
+	<!-- 未中奖弹窗 -->
+	<div class="no_win">
+		<img class="guang" src="//statics.shunliandongli.com/resource/game/images/guang.png">
+		<div class="win_content">
+			<div class="flex_center">
+				<img src="//statics.shunliandongli.com/resource/game/images/wz.png">
+				<div>
+					<span>谢谢参与</span>
+					<p>很遗憾，您未获得奖品</p>
+					<img class="again" src="//statics.shunliandongli.com/resource/game/images/wh_btn.png">
+				</div>
+				<!-- 图层关闭按钮 -->
+				<span class="close_btn"></span>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- 版本过低 -->
+	<div class="Android">
+		<div>
+			当前安卓版本过低，暂不支持此功能
+		</div>
+	</div>
+
+
+	<!-- 返回顶部 -->
+	<img class="backtop" src="//statics.shunliandongli.com/resource/game/images/TOP.png">
+
+
+</div>
+</body>
+</html>

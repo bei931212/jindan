@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>V创客升级标准和周补贴发放人群的说明</title>
+	<link rel="stylesheet" type="text/css" href="css/explain.css">
+	<link rel="stylesheet" type="text/css" href="css/reset.css">
+	<script type="text/javascript" src="js/flexible.js"></script>
+</head>
+<body>
+	<div class="explain">
+		<div class="title">
+			<img src="images/logo.png">
+			<span>V创客升级标准<br>和周补贴发放人群的说明</span>
+		</div>
+
+		<div class="main_one">
+			<div class="mian_title_one">
+				一、V创客升级标准
+			</div>
+
+			<p class="p">根据小店销售或购物的单品金额获得相应的好评分，好评得分，中评或差评就不得分；再根据好评分升级。</p>
+			
+			<div class="tb_pinfeng">
+				<ul class="left">
+					<li class="leftop">单品金额</li>
+					<li>﹤20元</li>
+					<li>≥20元，且﹤100元</li>
+					<li>≥100元，且﹤300元</li>
+					<li>≥300元，且﹤600元</li>
+					<li>≥600元</li>
+				</ul>
+				<ul class="right">
+					<li class="rightop">好评分</li>
+					<li>1</li>
+					<li>3</li>
+					<li>5</li>
+					<li>7</li>
+					<li>9</li>
+				</ul>
+			</div>
+			<div class="tb_jifeng">
+				<ul class="jifenleft">
+					<li class="jifenleftop">好评分</li>
+					<li>10分-49分</li>
+					<li>50分-199分</li>
+					<li>200分-499分</li>
+					<li>500分-999分</li>
+					<li>1000分-1999分</li>
+					<li>2000分以上</li>
+				</ul>
+				<ul class="jifencenter">
+					<li class="centertop">V创客等级</li>
+					<li>v1</li>
+					<li>v2</li>
+					<li>v3</li>
+					<li>v4</li>
+					<li>v5</li>
+					<li>v6</li>
+				</ul>
+				<ul class="jifenright">
+					<li class="rightop">5月8日之前V创客赠送好评分</li>
+					<li>49个好评分</li>
+					<li>199个好评分</li>
+					<li>499个好评分</li>
+					<li>999个好评分</li>
+					<li>1999个好评分</li>
+					<li>3000个好评分</li>
+				</ul>
+			</div>
+
+			<p class="p2">
+				备注：目前消费者只要确认收货或者系统默认确认收货后，<span>系统就会默认厂商给消费者好评</span>。同一个商品一个月内最多可获得20次好评分机会。
+			</p>
+		</div>
+
+
+
+		<div class="main_two">
+			<div class="mian_title_two">
+				二、周补贴说明
+			</div>
+			<p class="two_p1">
+				只有活跃的V1及V1以上创客才能参与周补贴分配，V1及V1以上创客每周只要获得至少<span>20个积分即为活跃的创客</span>；此说明从2017年5月8日开始执行生效。
+			</p>
+			<p class="two_p2">
+				备注：目前获得积分的途径有微信商城签到、APP商城签到、推广锁粉、购物后发表图文评价和浏览商城随机获得赠送积分；目前为了感谢家人们体验购物，只要上个自然月内有购物获得评价（包括好评、中评和差评）的V1及V1以上创客，则本自然月都视为活跃的创客。
+			</p>
+		</div>
+
+		<div class="bottom">
+			<img src="images/bottom_logo.png">
+			<p>www.shunliandongli.com</p>
+		</div>
+	</div>
+</body>
+</html>
